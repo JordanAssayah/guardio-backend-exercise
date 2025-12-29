@@ -122,6 +122,63 @@ curl -X POST https://hiring.external.guardio.dev/be/stream_start \
 
 ---
 
+## Production Deployment (Render.com)
+
+### 1. Create a New Web Service
+
+1. Go to [Render Dashboard](https://dashboard.render.com/)
+2. Click **New** → **Web Service**
+3. Connect your GitHub repository
+
+### 2. Configure Build & Deploy Settings
+
+| Setting           | Value                                              |
+| ----------------- | -------------------------------------------------- |
+| **Runtime**       | Python                                             |
+| **Build Command** | `pip install .`                                    |
+| **Start Command** | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
+
+> **Note:** Render automatically sets the `$PORT` environment variable at runtime.
+
+### 3. Set Environment Variables
+
+In the **Environment** section, add:
+
+| Variable           | Value                           |
+| ------------------ | ------------------------------- |
+| `POKEPROXY_CONFIG` | `./example-config.json`         |
+| `POKEPROXY_SECRET` | Your base64-encoded HMAC secret |
+
+Generate a secret with: `openssl rand -base64 32`
+
+### 4. Config File for Production
+
+The `example-config.json` file contains placeholder `localhost` URLs. For production:
+
+**Option A:** Edit `example-config.json` with your real downstream URLs before deploying.
+
+**Option B:** Create a separate `config.json` with production URLs, commit it, and set `POKEPROXY_CONFIG=./config.json`.
+
+### 5. Deploy
+
+Click **Create Web Service**. Render will build and deploy automatically.
+
+Your service will be available at: `https://<your-service>.onrender.com`
+
+Use this URL when calling the Guardio Stream API:
+
+```bash
+curl -X POST https://hiring.external.guardio.dev/be/stream_start \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://<your-service>.onrender.com/stream",
+    "email": "your@email.com",
+    "enc_secret": "<your-base64-encoded-secret>"
+  }'
+```
+
+---
+
 ## Testing
 
 ### Run Unit Tests
