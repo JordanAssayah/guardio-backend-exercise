@@ -17,7 +17,7 @@ def pokemon_to_json(pokemon: Any) -> Dict[str, Any]:
     return MessageToDict(
         pokemon,
         preserving_proto_field_name=True,
-        including_default_value_fields=True
+        always_print_fields_with_no_presence=True
     )
 
 

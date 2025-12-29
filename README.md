@@ -106,6 +106,47 @@ curl -X POST https://hiring.external.guardio.dev/be/stream_start \
 
 ---
 
+## Testing
+
+### Run Unit Tests
+
+```bash
+# Install test dependencies
+uv pip install -e ".[test]"
+
+# Run all tests
+POKEPROXY_SECRET="your-base64-secret" POKEPROXY_CONFIG="./config.json" pytest tests/ -v
+
+# Run with coverage report
+POKEPROXY_SECRET="your-base64-secret" POKEPROXY_CONFIG="./config.json" pytest tests/ --cov=app --cov-report=term-missing
+```
+
+### Manual Testing with Mock Downstream
+
+Start all three components to test the full flow:
+
+```bash
+# Terminal 1: Start mock downstream server (simulates your config.json endpoints)
+python scripts/mock_downstream.py
+
+# Terminal 2: Start the proxy server
+fastapi dev app/main.py
+
+# Terminal 3: Send test Pokemon (inline secret)
+POKEPROXY_SECRET="your-base64-secret" python scripts/send_pokemon.py              # Pikachu → /default
+POKEPROXY_SECRET="your-base64-secret" python scripts/send_pokemon.py --legendary  # Mewtwo → /legendary
+POKEPROXY_SECRET="your-base64-secret" python scripts/send_pokemon.py --powerful   # Dragonite → /powerful
+```
+
+Or source your `.env` file first:
+
+```bash
+export $(grep -v '^#' .env | xargs)
+python scripts/send_pokemon.py --legendary
+```
+
+---
+
 ## Checkpoint Answers
 
 ### 1. The URL must be accessible from the internet. What are your options?
