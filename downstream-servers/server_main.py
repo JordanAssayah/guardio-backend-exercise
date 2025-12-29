@@ -2,11 +2,15 @@
 Main downstream server - handles Pokemon JSON requests on port 9001.
 Routes: /legendary, /powerful, /default
 """
+import os
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 import uvicorn
 
 app = FastAPI(title="Pokemon Downstream Server (Main)")
+
+# Get port from environment variable (Render.com sets $PORT) or default to 9001
+PORT = int(os.getenv("PORT", 9001))
 
 
 @app.post("/legendary")
@@ -55,9 +59,9 @@ async def default(request: Request):
 @app.get("/health")
 async def health():
     """Health check endpoint."""
-    return {"status": "healthy", "server": "main", "port": 9001}
+    return {"status": "healthy", "server": "main", "port": PORT}
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=9001)
+    uvicorn.run(app, host="0.0.0.0", port=PORT)
 

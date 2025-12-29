@@ -128,13 +128,15 @@ curl -X POST https://hiring.external.guardio.dev/be/stream_start \
 
 ## Production Deployment (Render.com)
 
-### 1. Create a New Web Service
+### Deploying PokeProxy
+
+#### 1. Create a New Web Service
 
 1. Go to [Render Dashboard](https://dashboard.render.com/)
 2. Click **New** → **Web Service**
 3. Connect your GitHub repository
 
-### 2. Configure Build & Deploy Settings
+#### 2. Configure Build & Deploy Settings
 
 | Setting           | Value                                              |
 | ----------------- | -------------------------------------------------- |
@@ -144,7 +146,7 @@ curl -X POST https://hiring.external.guardio.dev/be/stream_start \
 
 > **Note:** Render automatically sets the `$PORT` environment variable at runtime.
 
-### 3. Set Environment Variables
+#### 3. Set Environment Variables
 
 In the **Environment** section, add:
 
@@ -155,7 +157,7 @@ In the **Environment** section, add:
 
 Generate a secret with: `openssl rand -base64 32`
 
-### 4. Config File for Production
+#### 4. Config File for Production
 
 The `example-config.json` file contains placeholder `localhost` URLs. For production:
 
@@ -163,7 +165,7 @@ The `example-config.json` file contains placeholder `localhost` URLs. For produc
 
 **Option B:** Create a separate `config.json` with production URLs, commit it, and set `POKEPROXY_CONFIG=./config.json`.
 
-### 5. Deploy
+#### 5. Deploy
 
 Click **Create Web Service**. Render will build and deploy automatically.
 
@@ -180,6 +182,62 @@ curl -X POST https://hiring.external.guardio.dev/be/stream_start \
     "enc_secret": "<your-base64-encoded-secret>"
   }'
 ```
+
+### Deploying Downstream Test Server
+
+#### 1. Create a New Web Service
+
+1. Go to [Render Dashboard](https://dashboard.render.com/)
+2. Click **New** → **Web Service**
+3. Connect your GitHub repository (same repo as PokeProxy)
+
+#### 2. Configure Build & Deploy Settings
+
+| Setting           | Value                                                                    |
+| ----------------- | ------------------------------------------------------------------------ |
+| **Runtime**       | Python                                                                   |
+| **Build Command** | `pip install .` (installs dependencies from project root)                |
+| **Start Command** | `uvicorn downstream-servers.server_main:app --host 0.0.0.0 --port $PORT` |
+
+> **Note:** The downstream server uses the same dependencies as the main project, so we install from the project root. The server automatically uses the `$PORT` environment variable set by Render.
+
+#### 3. Set Environment Variables
+
+No environment variables required for the downstream server (it's stateless).
+
+#### 4. Deploy
+
+Click **Create Web Service**. Render will build and deploy automatically.
+
+Your downstream service will be available at: `https://<your-downstream-service>.onrender.com`
+
+#### 5. Update PokeProxy Config
+
+Update your `config.json` (or `example-config.json`) to point to the deployed downstream server:
+
+```json
+{
+    "rules": [
+        {
+            "url": "https://<your-downstream-service>.onrender.com/legendary",
+            "reason": "legendary pokemon",
+            "match": ["legendary==true"]
+        },
+        {
+            "url": "https://<your-downstream-service>.onrender.com/powerful",
+            "reason": "high attack pokemon",
+            "match": ["attack>100", "hit_points>50"]
+        },
+        {
+            "url": "https://<your-downstream-service>.onrender.com/default",
+            "reason": "default catch-all",
+            "match": []
+        }
+    ]
+}
+```
+
+Then update your PokeProxy service's `POKEPROXY_CONFIG` environment variable to point to this config file, or redeploy with the updated config.
 
 ---
 
