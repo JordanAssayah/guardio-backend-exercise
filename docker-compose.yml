@@ -1,0 +1,12 @@
+services:
+  pokeproxy:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # example-config.json shows the config format with placeholder localhost URLs.
+      # For production, create your own config.json with real downstream URLs.
+      - ./example-config.json:/app/config.json:ro
+    env_file:
+      - .env
+    restart: unless-stopped

@@ -4,6 +4,22 @@ A reverse-proxy service that consumes Pokemon protobuf streams from Guardio's AP
 
 ## Quick Start
 
+### With Docker (recommended for Windows/cross-platform)
+
+```bash
+# Copy env template and set your secret
+cp env.example .env
+# Edit .env and set POKEPROXY_SECRET (generate with: openssl rand -base64 32)
+
+# Run with Docker Compose
+docker compose up
+```
+
+> **Note:** `example-config.json` demonstrates the config format with placeholder `localhost` URLs.
+> For production, create your own `config.json` with real downstream service URLs and update `docker-compose.yml` to mount it.
+
+### Local Development (with uv)
+
 ```bash
 # Install dependencies
 uv sync
@@ -12,7 +28,7 @@ uv sync
 uv run python -m grpc_tools.protoc --python_out=app/proto --proto_path=app/proto app/proto/pokemon.proto
 
 # Copy the example .env file and configure it
-cp .env.example .env
+cp env.example .env
 
 # Generate a secret for HMAC signature validation
 openssl rand -base64 32
@@ -215,7 +231,9 @@ This order follows the data flow and ensures each phase is independently testabl
 │   └── proto/
 │       ├── pokemon.proto
 │       └── pokemon_pb2.py   # Generated protobuf code
-├── config.json              # Example routing config
+├── example-config.json      # Example routing config (placeholder URLs)
+├── docker-compose.yml       # Docker Compose for local development
+├── Dockerfile               # Multi-stage Docker build with uv
 ├── pyproject.toml           # Dependencies
 └── README.md
 ```

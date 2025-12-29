@@ -1,0 +1,62 @@
+# Git
+.git/
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+
+# Testing
+tests/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+.cursor/
+.cursorignore
+.cursorindexingignore
+
+# Environment files (use docker-compose env_file instead)
+.env
+.envrc
+
+# Local config (mount via docker-compose)
+config.json
+
+# Documentation
+README.md
+docs/
+
+# Scripts (not needed in production)
+scripts/
+
+# Docker files (not needed in the image)
+Dockerfile
+docker-compose.yml
+docker-compose*.yml
+.dockerignore
+
+# Misc
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
