@@ -154,16 +154,36 @@ def _filter_response_headers(headers: httpx.Headers) -> dict:
     return {k: v for k, v in headers.items() if k.lower() not in HOP_BY_HOP_HEADERS}
 
 
-@router.post("/stream")
+@router.post(
+    "/stream",
+    response_class=Response,
+    responses={
+        200: {
+            "description": "Proxied response from downstream service (format varies by downstream). Returns `{\"status\": \"no_match\"}` if no routing rule matched.",
+        },
+        400: {"description": "Empty body, invalid protobuf data, or missing Pokemon name"},
+        401: {"description": "Missing or invalid X-Grd-Signature header"},
+        413: {"description": "Request body too large"},
+        500: {"description": "Internal server error (config or secret not loaded)"},
+        502: {"description": "Failed to connect to downstream service"},
+        504: {"description": "Downstream service timeout"}
+    }
+)
 async def stream(request: Request) -> Response:
     """
     Receive Pokemon protobuf stream, validate signature, match rules, and proxy to downstream.
     
-    Headers:
-        X-Grd-Signature: HMAC-SHA256 signature of the request body
-        
-    Returns:
-        Response from the downstream service
+    **Headers:**
+    - `X-Grd-Signature` (required): HMAC-SHA256 signature of the request body
+    
+    **Request Body:** Binary Pokemon protobuf data
+    
+    **Flow:**
+    1. Validate HMAC signature
+    2. Parse Pokemon protobuf
+    3. Match against routing rules
+    4. Forward as JSON to matched downstream URL
+    5. Return downstream response
     """
     body = await validate_request_signature(request)
     pokemon = parse_pokemon_protobuf(body)
