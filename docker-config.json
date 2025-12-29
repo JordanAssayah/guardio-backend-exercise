@@ -1,0 +1,24 @@
+{
+    "rules": [
+        {
+            "url": "http://downstream-test:9001/legendary",
+            "reason": "legendary pokemon",
+            "match": [
+                "legendary==true"
+            ]
+        },
+        {
+            "url": "http://downstream-test:9001/powerful",
+            "reason": "high attack pokemon",
+            "match": [
+                "attack>100",
+                "hit_points>50"
+            ]
+        },
+        {
+            "url": "http://downstream-test:9001/default",
+            "reason": "default catch-all",
+            "match": []
+        }
+    ]
+}

@@ -26,6 +26,7 @@ async def legendary(request: Request):
 @app.post("/powerful")
 async def powerful(request: Request):
     """Handle powerful (high attack) Pokemon."""
+    print(request.headers)
     data = await request.json()
     pokemon_name = data.get("name", "Unknown")
     attack = data.get("attack", 0)
@@ -40,6 +41,7 @@ async def powerful(request: Request):
 @app.post("/default")
 async def default(request: Request):
     """Handle all other Pokemon (catch-all)."""
+    print(request.headers)
     data = await request.json()
     pokemon_name = data.get("name", "Unknown")
     return JSONResponse({

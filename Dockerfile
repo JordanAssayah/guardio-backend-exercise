@@ -22,6 +22,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Copy application code
 COPY app/ ./app/
 
+# Copy downstream test server
+COPY downstream-servers/ ./downstream-servers/
+
 # Install the project itself
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev

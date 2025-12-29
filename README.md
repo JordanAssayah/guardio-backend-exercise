@@ -4,19 +4,23 @@ A reverse-proxy service that consumes Pokemon protobuf streams from Guardio's AP
 
 ## Quick Start
 
-### With Docker (recommended for Windows/cross-platform)
+### With Docker (for local testing with downstream test server)
 
 ```bash
 # Copy env template and set your secret
 cp env.example .env
 # Edit .env and set POKEPROXY_SECRET (generate with: openssl rand -base64 32)
 
-# Run with Docker Compose
+# Run with Docker Compose (includes proxy + downstream test server)
 docker compose up
 ```
 
-> **Note:** `example-config.json` demonstrates the config format with placeholder `localhost` URLs.
-> For production, create your own `config.json` with real downstream service URLs and update `docker-compose.yml` to mount it.
+This will start:
+
+- **PokeProxy** on port 8000 (main proxy service)
+- **Downstream test server** on port 9001 (test server for local testing)
+
+The Docker setup uses `docker-config.json` which routes to the `downstream-test` service. This is **only for local testing**. For production, create your own `config.json` with real downstream service URLs and update `docker-compose.yml` to mount it.
 
 ### Local Development (with uv)
 

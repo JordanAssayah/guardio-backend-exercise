@@ -6,7 +6,35 @@ services:
     volumes:
       # example-config.json shows the config format with placeholder localhost URLs.
       # For production, create your own config.json with real downstream URLs.
-      - ./example-config.json:/app/config.json:ro
+      - ./docker-config.json:/app/config.json:ro
     env_file:
       - .env
     restart: unless-stopped
+    depends_on:
+      - downstream-test
+    networks:
+      - pokeproxy-network
+
+  downstream-test:
+    build: .
+    ports:
+      - "9001:9001"
+    working_dir: /app/downstream-servers
+    command:
+      [
+        "uv",
+        "run",
+        "uvicorn",
+        "server_main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "9001",
+      ]
+    restart: unless-stopped
+    networks:
+      - pokeproxy-network
+
+networks:
+  pokeproxy-network:
+    driver: bridge
