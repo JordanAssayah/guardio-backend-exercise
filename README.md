@@ -241,7 +241,7 @@ Then update your PokeProxy service's `POKEPROXY_CONFIG` environment variable to 
 
 #### 6. Verify Production Deployment
 
-See [Production Flow Documentation](results/flow.md) for visual proof that the system works in production, including request flow, proxy server logs, and downstream server logs.
+See [Production Flow Documentation](screen-results/flow.md) for visual proof that the system works in production, including request flow, proxy server logs, and downstream server logs.
 
 ---
 
