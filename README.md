@@ -239,6 +239,10 @@ Update your `config.json` (or `example-config.json`) to point to the deployed do
 
 Then update your PokeProxy service's `POKEPROXY_CONFIG` environment variable to point to this config file, or redeploy with the updated config.
 
+#### 6. Verify Production Deployment
+
+See [Production Flow Documentation](results/flow.md) for visual proof that the system works in production, including request flow, proxy server logs, and downstream server logs.
+
 ---
 
 ## Testing
