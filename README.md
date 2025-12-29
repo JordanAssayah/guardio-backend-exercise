@@ -218,6 +218,33 @@ export $(grep -v '^#' .env | xargs)
 python scripts/send_pokemon.py --legendary
 ```
 
+### Local Testing with Downstream Test Server
+
+For a more realistic test setup, use the FastAPI test server in `downstream-servers/`:
+
+```bash
+# Terminal 1: Start the downstream test server (port 9001)
+cd downstream-servers
+python server_main.py
+
+# Terminal 2: Start the proxy server
+# Make sure example-config.json points to http://localhost:9001/*
+fastapi dev app/main.py
+
+# Terminal 3: Send test Pokemon
+POKEPROXY_SECRET="your-base64-secret" python scripts/send_pokemon.py              # Pikachu → /default
+POKEPROXY_SECRET="your-base64-secret" python scripts/send_pokemon.py --legendary  # Mewtwo → /legendary
+POKEPROXY_SECRET="your-base64-secret" python scripts/send_pokemon.py --powerful   # Dragonite → /powerful
+```
+
+The test server will log incoming requests and headers, making it easy to verify that:
+
+- Pokemon data is correctly converted from protobuf to JSON
+- Headers are properly forwarded (including `X-Grd-Reason`)
+- Routing rules match correctly
+
+See `downstream-servers/README.md` for more details about the test server.
+
 ---
 
 ## Checkpoint Answers
